@@ -1,0 +1,243 @@
+<!D<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUNKER EDITION</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #808080;
+            color: #333;
+        }
+        .container {
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .quote {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #ff6f61;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+        .button, .show-list-button {
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #ff6f61;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .button:hover, .show-list-button:hover {
+            background-color: #d94c3d;
+            transform: scale(1.05);
+        }
+        .input-container {
+            margin-top: 20px;
+            display: block;
+        }
+        .input-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1.1rem;
+        }
+        .input-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #218838;
+        }
+        .quote-list {
+            display: none;
+            margin-top: 20px;
+        }
+        .quote-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .quote-list li {
+            padding: 10px;
+            margin: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quote-list button {
+            background-color: #ff6f61;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .quote-list button:hover {
+            background-color: #d94c3d;
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 600px) {
+            .quote {
+                font-size: 1.2rem;
+                padding: 15px;
+                max-width: 95%;
+            }
+            .button, .show-list-button {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+            .input-container input {
+                font-size: 1rem;
+            }
+            .input-container button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BUNKER EDITION</h1>
+        <div class="quote" id="quote">Klicke unten, um einen Spruch zu sehen!</div>
+        <button class="button" onclick="generateQuote()">Neuer Spruch</button>
+
+        <button class="show-list-button" onclick="toggleQuoteList()">📝 Sprüche anzeigen</button>
+
+        <div class="quote-list" id="quoteList">
+            <ul id="quoteListItems"></ul>
+        </div>
+
+        <button class="button" onclick="toggleInputContainer()">Neuen Spruch hinzufügen</button>
+
+        <div class="input-container" id="inputContainer" style="display: none;">
+            <input type="text" id="customQuote" placeholder="Gib deinen Spruch ein">
+            <button onclick="addCustomQuote()">Hinzufügen</button>
+        </div>
+    </div>
+
+    <script>
+        let quotes = JSON.parse(localStorage.getItem('quotes')) || [
+            "WENN DER JIBBET MAL WIEDER ZU SEHR KNALLT",
+            "WENN MORROW STURMFREI HAT",
+            "WENN JASON EIN LITER NOUGAT VODKA IM POOL EXT",
+            "WENN SPIELO MAL WIEDER NICHT GÖNNT", 
+            "WENN SPIELO MAL WIEDER GÖNNT",
+            "WENN MAN GERDE ZOCKEN WILL UND MAMA RUFT",
+            "WENN MAN STANDBILD BEKOMMT GERADE ALS NEN GEGNER UM DIE ECKE KOMMT",
+            "WENN ELIOL MAL WIEDER NEN FUCHS HOLT",
+            "WENN MAN VON CLUB NACH HAUSE KOMMT UND MIES HUNGER HAT",
+            "WENN NACH FUSION DER ZUG VERSPÄTUNG HAT",
+            "WENN MAN UM 7 UHR MORGENS AUS DEM FUSION KOMMT UND DIE SONNE SCHEINT",
+            "WENN ELIOL MAL WIEDER MIT ERWACHSENEN DISKUTIERT",
+            "WENN JJ MAL WIEDER ALLES BESSER WEIß",
+            "WENN DIE MISCHE MAL WIEDER ZU SEHR KANLLT",
+            "WENN MAN KEIN KLOPAPIER MEHR HAT UND MAN ALLEINE ZU HAUSE IST", 
+            "WENN DAS ESSEN ENDLICH FERTIG IST", 
+            "WENN MAN NOCH NE FRISCHE TÜTE SÜßIGKEITEN FINDET", 
+            "WENN JASON NACH CLUB GEMERKT HAT DAS SEINE JACKE WEG IST", 
+            "WENN MAN BOCK HAT AUF CHILLEN ABER KEINER ANTWORTET",
+            "WENN MAN MORGEN ABI SCHREIBT", 
+            "WENN DIE ELTERN ZU FRÜH WIEDERKOMMEN", 
+            "WENN FERIEN VORBEI SIND", 
+            "WENN DER DÖNER MAL WIEDER ZU SEHR FETZT", 
+            "WENN JUSTIN MAL WIEDER NE BESOFFENE LABERATTACKE VERTEILT", 
+            "WENN MAN VERSUCHT TORBEN ZU VERSTEHEN AUF NA PARTY", 
+            "WENN MAN SIEHT WIE DER RAUM NACH NA PARTY AUSSIEHT",
+            "WENN MICKY KRAUSE NEN PRIVATKONZERT GIBT", 
+            "WENN MENÜ 1 AUF EINMAL WEG IST", 
+            "WENN ES WIEDER SO KALT IST DAS MAN NICHT MEHR DRAUßEN CHILLEN KANN", 
+            "WENN BEI KAIS DIE PFEIFE MAL WEIDER READY IST", 
+            "WENN MAN BEI JJ IM GARTEN PARTY MACHEN KANN", 
+            "WENN MAN BEI MORROW MAL WIEDER IM DART VERLIERT", 
+            "WENN MAN WIEDER GRILLEN KANN IM SOMMER", 
+            "WENN NEBEN DIR EINER NIEßT UND DU WAS ABBEKOMMST", 
+            "WENN KEIN PLATZ MEHR AUF DEM SOFA IST", 
+            "WENN MAN MERKT DAS DER ERNST DES LEBENS SO LANGSAM LOS GEHT", 
+            "WENN REWE AUF EINMAL NURNOCH BIS 8 UHR AUF HAT",
+            "WENN MAN 1.3G BEKOMMT ANSTATT 1G",
+            "WENN KEINER EIN FEUER DABEI HAT", 
+            "WENN DIE KIPPEN AUF EINMAL LEER SIND", 
+            "WENN DIE HÄNDE SO KALT SIND DAS MAN SICH NOCH NICHT MAL EINE DREHEN KANN"
+        ];
+
+        function generateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const quoteElement = document.getElementById('quote');
+            quoteElement.classList.add('fade-out');
+            setTimeout(() => {
+                quoteElement.innerText = quotes[randomIndex];
+                quoteElement.classList.remove('fade-out');
+                quoteElement.classList.add('fade-in');
+                setTimeout(() => {
+                    quoteElement.classList.remove('fade-in');
+                }, 500);
+            }, 500);
+        }
+
+        function addCustomQuote() {
+            const customQuote = document.getElementById('customQuote').value;
+            if (customQuote.trim() !== "") {
+                quotes.push(customQuote);
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                document.getElementById('customQuote').value = ""; // Eingabefeld leeren
+                toggleInputContainer(); // Eingabefeld schließen
+                showQuoteList(); // Liste aktualisieren
+            } else {
+                alert("Bitte einen gültigen Spruch eingeben!");
+            }
+        }
+
+        function toggleInputContainer() {
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.style.display = inputContainer.style.display === "none" ? "block" : "none";
+        }
+
+        function toggleQuoteList() {
+            const quoteList = document.getElementById('quoteList');
+            quoteList.style.display = quoteList.style.display === "none" ? "block" : "none";
+            showQuoteList();
+        }
+
+        function showQuoteList() {
+            const quoteListItems = document.getElementById('quoteListItems');
+            quoteListItems.innerHTML = ''; // Liste zurücksetzen
+            quotes.forEach((quote, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `${quote} <button class="delete-button" onclick="deleteQuote(${index})">Löschen</button>`;
+                quoteListItems.appendChild(li);
+            });
+        }
+
+        function deleteQuote(index) {
+            quotes.splice(index, 1);
+            localStorage.setItem('quotes', JSON.stringify(quotes));
+            showQuoteList(); // Liste nach dem Löschen aktualisieren
+        }
+    </script>
+</body>
+</html>
